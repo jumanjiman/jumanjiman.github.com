@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Basics | Jumanjiman]]></title>
   <link href="http://jumanjiman.github.com/blog/categories/basics/atom.xml" rel="self"/>
   <link href="http://jumanjiman.github.com/"/>
-  <updated>2011-10-27T16:15:09-04:00</updated>
+  <updated>2011-10-27T16:31:18-04:00</updated>
   <id>http://jumanjiman.github.com/</id>
   <author>
     <name><![CDATA[Paul Morgan]]></name>
@@ -39,7 +39,7 @@ laptop. In this post I describe:</p>
 what is installed by the gem bundle.
 I fixed that by updating a single file in my git repo:</p>
 
-<p>```
+<p>``` diff
 diff --git a/Gemfile.lock b/Gemfile.lock
 index 6350698..aa5fff8 100644
 --- a/Gemfile.lock

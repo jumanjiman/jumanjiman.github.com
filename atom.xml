@@ -4,7 +4,7 @@
   <title><![CDATA[Jumanjiman]]></title>
   <link href="http://jumanjiman.github.com/atom.xml" rel="self"/>
   <link href="http://jumanjiman.github.com/"/>
-  <updated>2011-10-27T16:15:09-04:00</updated>
+  <updated>2011-10-27T16:31:18-04:00</updated>
   <id>http://jumanjiman.github.com/</id>
   <author>
     <name><![CDATA[Paul Morgan]]></name>
@@ -39,7 +39,7 @@ laptop. In this post I describe:</p>
 what is installed by the gem bundle.
 I fixed that by updating a single file in my git repo:</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -52,19 +52,20 @@ I fixed that by updating a single file in my git repo:</p>
 <span class='line-number'>11</span>
 <span class='line-number'>12</span>
 <span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>diff --git a/Gemfile.lock b/Gemfile.lock
-</span><span class='line'>index 6350698..aa5fff8 100644
-</span><span class='line'>--- a/Gemfile.lock
-</span><span class='line'>+++ b/Gemfile.lock
-</span><span class='line'>@@ -32,7 +32,7 @@ GEM
+</pre></td><td class='code'><pre><code class='diff'><span class='line'><span class="gh">diff --git a/Gemfile.lock b/Gemfile.lock</span>
+</span><span class='line'><span class="gh">index 6350698..aa5fff8 100644</span>
+</span><span class='line'><span class="gd">--- a/Gemfile.lock</span>
+</span><span class='line'><span class="gi">+++ b/Gemfile.lock</span>
+</span><span class='line'><span class="gu">@@ -32,7 +32,7 @@ GEM</span>
 </span><span class='line'>     pygments.rb (0.1.3)
 </span><span class='line'>       rubypython (&gt;= 0.5.1)
 </span><span class='line'>     rack (1.3.2)
-</span><span class='line'>-    rake (0.9.2)
-</span><span class='line'>+    rake (0.9.2.2)
+</span><span class='line'><span class="gd">-    rake (0.9.2)</span>
+</span><span class='line'><span class="gi">+    rake (0.9.2.2)</span>
 </span><span class='line'>     rb-fsevent (0.4.3.1)
 </span><span class='line'>     rdiscount (1.6.8)
-</span><span class='line'>     rubypants (0.2.0)</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>     rubypants (0.2.0)
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>The second issue did not manifest itself until I tried to
@@ -73,7 +74,7 @@ had already identified the root cause and
 <a href="https://bitbucket.org/raineszm/rubypython/issue/7/libpython-fails-to-load-on-64-bit-centos">posted a solution</a>. On my machine, I ran <code>cd ~/.rvm</code> and then
 modified the offending file like this:</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -85,18 +86,19 @@ modified the offending file like this:</p>
 <span class='line-number'>10</span>
 <span class='line-number'>11</span>
 <span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>diff --git a/gems/ruby-1.9.2-p0/gems/rubypython-0.5.1/lib/rubypython/pythonexec.rb b/gems/ruby-1.9.2-p0/gems/rubypython-0.5.1/lib/rubypython/pythonexec.rb
-</span><span class='line'>index d265cf9..c42c14d 100644
-</span><span class='line'>--- a/gems/ruby-1.9.2-p0/gems/rubypython-0.5.1/lib/rubypython/pythonexec.rb
-</span><span class='line'>+++ b/gems/ruby-1.9.2-p0/gems/rubypython-0.5.1/lib/rubypython/pythonexec.rb
-</span><span class='line'>@@ -59,6 +59,7 @@ class RubyPython::PythonExec
-</span><span class='line'>         locations &lt;&lt; File.join("/opt/lib", name)
-</span><span class='line'>         locations &lt;&lt; File.join("/usr/local/lib", name)
-</span><span class='line'>         locations &lt;&lt; File.join("/usr/lib", name)
-</span><span class='line'>+        locations &lt;&lt; File.join("/usr/lib64", name)
+</pre></td><td class='code'><pre><code class='diff'><span class='line'><span class="gh">diff --git a/gems/ruby-1.9.2-p0/gems/rubypython-0.5.1/lib/rubypython/pythonexec.rb b/gems/ruby-1.9.2-p0/gems/rubypython-0.5.1/lib/rubypython/pythonexec.rb</span>
+</span><span class='line'><span class="gh">index d265cf9..c42c14d 100644</span>
+</span><span class='line'><span class="gd">--- a/gems/ruby-1.9.2-p0/gems/rubypython-0.5.1/lib/rubypython/pythonexec.rb</span>
+</span><span class='line'><span class="gi">+++ b/gems/ruby-1.9.2-p0/gems/rubypython-0.5.1/lib/rubypython/pythonexec.rb</span>
+</span><span class='line'><span class="gu">@@ -59,6 +59,7 @@ class RubyPython::PythonExec</span>
+</span><span class='line'>         locations &lt;&lt; File.join(&quot;/opt/lib&quot;, name)
+</span><span class='line'>         locations &lt;&lt; File.join(&quot;/usr/local/lib&quot;, name)
+</span><span class='line'>         locations &lt;&lt; File.join(&quot;/usr/lib&quot;, name)
+</span><span class='line'><span class="gi">+        locations &lt;&lt; File.join(&quot;/usr/lib64&quot;, name)</span>
 </span><span class='line'>       end
 </span><span class='line'>     end
-</span><span class='line'> </span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <h2>Plugin configuration</h2>
@@ -105,7 +107,7 @@ modified the offending file like this:</p>
 enabling the Google Plus stuff was simply a matter of adding
 my profile number:</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -118,19 +120,20 @@ my profile number:</p>
 <span class='line-number'>11</span>
 <span class='line-number'>12</span>
 <span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>diff --git a/_config.yml b/_config.yml
-</span><span class='line'>index cdc7594..002b87b 100644
-</span><span class='line'>--- a/_config.yml
-</span><span class='line'>+++ b/_config.yml
-</span><span class='line'>@@ -75,7 +75,7 @@ google_plus_one_size: medium
-</span><span class='line'> 
+</pre></td><td class='code'><pre><code class='diff'><span class='line'><span class="gh">diff --git a/_config.yml b/_config.yml</span>
+</span><span class='line'><span class="gh">index cdc7594..002b87b 100644</span>
+</span><span class='line'><span class="gd">--- a/_config.yml</span>
+</span><span class='line'><span class="gi">+++ b/_config.yml</span>
+</span><span class='line'><span class="gu">@@ -75,7 +75,7 @@ google_plus_one_size: medium</span>
+</span><span class='line'>
 </span><span class='line'> # Google Plus Profile
 </span><span class='line'> # Hidden: No visible button, just add author information to search results
-</span><span class='line'>-googleplus_user:
-</span><span class='line'>+googleplus_user: 114044653383272567071
+</span><span class='line'><span class="gd">-googleplus_user:</span>
+</span><span class='line'><span class="gi">+googleplus_user: 114044653383272567071</span>
 </span><span class='line'> googleplus_hidden: false
-</span><span class='line'> 
-</span><span class='line'> # Pinboard</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>
+</span><span class='line'> # Pinboard
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>For Disqus (comments), I signed up at disqus.com and registered
@@ -138,7 +141,7 @@ the URL <a href="http://jumanjiman.github.com">http://jumanjiman.github.com</a>
 under the shortname <em>jumanjiman</em>.
 Then I modified my config to be:</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -151,19 +154,20 @@ Then I modified my config to be:</p>
 <span class='line-number'>11</span>
 <span class='line-number'>12</span>
 <span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>diff --git a/_config.yml b/_config.yml
-</span><span class='line'>index 002b87b..024933b 100644
-</span><span class='line'>--- a/_config.yml
-</span><span class='line'>+++ b/_config.yml
-</span><span class='line'>@@ -87,7 +87,7 @@ delicious_user:
+</pre></td><td class='code'><pre><code class='diff'><span class='line'><span class="gh">diff --git a/_config.yml b/_config.yml</span>
+</span><span class='line'><span class="gh">index 002b87b..024933b 100644</span>
+</span><span class='line'><span class="gd">--- a/_config.yml</span>
+</span><span class='line'><span class="gi">+++ b/_config.yml</span>
+</span><span class='line'><span class="gu">@@ -87,7 +87,7 @@ delicious_user:</span>
 </span><span class='line'> delicious_count: 3
-</span><span class='line'> 
+</span><span class='line'>
 </span><span class='line'> # Disqus Comments
-</span><span class='line'>-disqus_short_name:
-</span><span class='line'>+disqus_short_name: jumanjiman
+</span><span class='line'><span class="gd">-disqus_short_name:</span>
+</span><span class='line'><span class="gi">+disqus_short_name: jumanjiman</span>
 </span><span class='line'> disqus_show_comment_count: false
-</span><span class='line'> 
-</span><span class='line'> # Google Analytics</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>
+</span><span class='line'> # Google Analytics
+</span></code></pre></td></tr></table></div></figure>
 
 
 <h2>References</h2>
