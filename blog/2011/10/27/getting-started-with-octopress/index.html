@@ -1,0 +1,443 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Getting started with Octopress - Jumanjiman</title>
+  <meta name="author" content="Paul Morgan">
+
+  
+  <meta name="description" content="This is my first post with Octopress.
+I followed the installation instructions provided with Octopress,
+and it was pretty easy on my 64-bit Fedora 15 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://jumanjiman.github.com/blog/2011/10/27/getting-started-with-octopress">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Jumanjiman" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Jumanjiman</a></h1>
+  
+    <h2>Linux Engineer and advocate for freedom and transparency</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:jumanjiman.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Getting Started With Octopress</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+  
+
+<time datetime="2011-10-27T16:07:00-04:00" pubdate>Oct 27<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>This is my first post with <a href="http://www.octopress.org">Octopress</a>.
+I followed the installation instructions provided with Octopress,
+and it was pretty easy on my 64-bit <a href="http://fedoraproject.org">Fedora</a> 15
+laptop. In this post I describe:</p>
+
+<ul>
+<li>Two issues I encountered during setup along with their solutions</li>
+<li>Plugin configurations</li>
+<li>Helpful references for Markdown</li>
+</ul>
+
+
+<!-- more -->
+
+
+<h2>Issues</h2>
+
+<p>First, the version of <em>rake</em> required by Octopress did not match
+what is installed by the gem bundle.
+I fixed that by updating a single file in my git repo:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>diff --git a/Gemfile.lock b/Gemfile.lock
+</span><span class='line'>index 6350698..aa5fff8 100644
+</span><span class='line'>--- a/Gemfile.lock
+</span><span class='line'>+++ b/Gemfile.lock
+</span><span class='line'>@@ -32,7 +32,7 @@ GEM
+</span><span class='line'>     pygments.rb (0.1.3)
+</span><span class='line'>       rubypython (&gt;= 0.5.1)
+</span><span class='line'>     rack (1.3.2)
+</span><span class='line'>-    rake (0.9.2)
+</span><span class='line'>+    rake (0.9.2.2)
+</span><span class='line'>     rb-fsevent (0.4.3.1)
+</span><span class='line'>     rdiscount (1.6.8)
+</span><span class='line'>     rubypants (0.2.0)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The second issue did not manifest itself until I tried to
+add syntax highlighting to a code block. Luckily somebody else
+had already identified the root cause and
+<a href="https://bitbucket.org/raineszm/rubypython/issue/7/libpython-fails-to-load-on-64-bit-centos">posted a solution</a>. On my machine, I ran <code>cd ~/.rvm</code> and then
+modified the offending file like this:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>diff --git a/gems/ruby-1.9.2-p0/gems/rubypython-0.5.1/lib/rubypython/pythonexec.rb b/gems/ruby-1.9.2-p0/gems/rubypython-0.5.1/lib/rubypython/pythonexec.rb
+</span><span class='line'>index d265cf9..c42c14d 100644
+</span><span class='line'>--- a/gems/ruby-1.9.2-p0/gems/rubypython-0.5.1/lib/rubypython/pythonexec.rb
+</span><span class='line'>+++ b/gems/ruby-1.9.2-p0/gems/rubypython-0.5.1/lib/rubypython/pythonexec.rb
+</span><span class='line'>@@ -59,6 +59,7 @@ class RubyPython::PythonExec
+</span><span class='line'>         locations &lt;&lt; File.join("/opt/lib", name)
+</span><span class='line'>         locations &lt;&lt; File.join("/usr/local/lib", name)
+</span><span class='line'>         locations &lt;&lt; File.join("/usr/lib", name)
+</span><span class='line'>+        locations &lt;&lt; File.join("/usr/lib64", name)
+</span><span class='line'>       end
+</span><span class='line'>     end
+</span><span class='line'> </span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Plugin configuration</h2>
+
+<p>Plugins were ridiculously easy to configure. For example,
+enabling the Google Plus stuff was simply a matter of adding
+my profile number:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>diff --git a/_config.yml b/_config.yml
+</span><span class='line'>index cdc7594..002b87b 100644
+</span><span class='line'>--- a/_config.yml
+</span><span class='line'>+++ b/_config.yml
+</span><span class='line'>@@ -75,7 +75,7 @@ google_plus_one_size: medium
+</span><span class='line'> 
+</span><span class='line'> # Google Plus Profile
+</span><span class='line'> # Hidden: No visible button, just add author information to search results
+</span><span class='line'>-googleplus_user:
+</span><span class='line'>+googleplus_user: 114044653383272567071
+</span><span class='line'> googleplus_hidden: false
+</span><span class='line'> 
+</span><span class='line'> # Pinboard</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For Disqus (comments), I signed up at disqus.com and registered
+the URL <a href="http://jumanjiman.github.com">http://jumanjiman.github.com</a>
+under the shortname <em>jumanjiman</em>.
+Then I modified my config to be:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>diff --git a/_config.yml b/_config.yml
+</span><span class='line'>index 002b87b..024933b 100644
+</span><span class='line'>--- a/_config.yml
+</span><span class='line'>+++ b/_config.yml
+</span><span class='line'>@@ -87,7 +87,7 @@ delicious_user:
+</span><span class='line'> delicious_count: 3
+</span><span class='line'> 
+</span><span class='line'> # Disqus Comments
+</span><span class='line'>-disqus_short_name:
+</span><span class='line'>+disqus_short_name: jumanjiman
+</span><span class='line'> disqus_show_comment_count: false
+</span><span class='line'> 
+</span><span class='line'> # Google Analytics</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>References</h2>
+
+<p>Here are some references that I found useful for
+getting acquainted with Markdown:</p>
+
+<ul>
+<li><a href="http://warpedvisions.org/projects/markdown-cheat-sheet/">Markdown cheat sheet</a></li>
+<li><a href="http://octopress.org/docs/blogging/plugins/">Examples for Octopress</a></li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Paul Morgan</span></span>
+
+      
+
+
+
+
+  
+
+<time datetime="2011-10-27T16:07:00-04:00" pubdate>Oct 27<span>th</span>, 2011</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/basics/'>Basics</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://jumanjiman.github.com/blog/2011/10/27/getting-started-with-octopress/" data-via="jumanjiman" data-counturl="http://jumanjiman.github.com/blog/2011/10/27/getting-started-with-octopress/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2011/10/27/getting-started-with-octopress/">Getting started with Octopress</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Github Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/jumanjiman">@jumanjiman</a> on Github
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'jumanjiman',
+            count: 10,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("jumanjiman", 4, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <a href="http://twitter.com/jumanjiman" class="twitter-follow-button" data-width="208px" data-show-count="false">Follow @jumanjiman</a>
+  
+</section>
+
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/114044653383272567071?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2011 - Paul Morgan -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'jumanjiman';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://jumanjiman.github.com/blog/2011/10/27/getting-started-with-octopress';
+        var disqus_url = 'http://jumanjiman.github.com/blog/2011/10/27/getting-started-with-octopress';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

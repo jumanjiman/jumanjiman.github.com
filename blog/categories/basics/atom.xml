@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Basics | Jumanjiman]]></title>
+  <link href="http://jumanjiman.github.com/blog/categories/basics/atom.xml" rel="self"/>
+  <link href="http://jumanjiman.github.com/"/>
+  <updated>2011-10-27T16:15:09-04:00</updated>
+  <id>http://jumanjiman.github.com/</id>
+  <author>
+    <name><![CDATA[Paul Morgan]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Getting started with Octopress]]></title>
+    <link href="http://jumanjiman.github.com/blog/2011/10/27/getting-started-with-octopress/"/>
+    <updated>2011-10-27T16:07:00-04:00</updated>
+    <id>http://jumanjiman.github.com/blog/2011/10/27/getting-started-with-octopress</id>
+    <content type="html"><![CDATA[<p>This is my first post with <a href="http://www.octopress.org">Octopress</a>.
+I followed the installation instructions provided with Octopress,
+and it was pretty easy on my 64-bit <a href="http://fedoraproject.org">Fedora</a> 15
+laptop. In this post I describe:</p>
+
+<ul>
+<li>Two issues I encountered during setup along with their solutions</li>
+<li>Plugin configurations</li>
+<li>Helpful references for Markdown</li>
+</ul>
+
+
+<!-- more -->
+
+
+<h2>Issues</h2>
+
+<p>First, the version of <em>rake</em> required by Octopress did not match
+what is installed by the gem bundle.
+I fixed that by updating a single file in my git repo:</p>
+
+<p>```
+diff --git a/Gemfile.lock b/Gemfile.lock
+index 6350698..aa5fff8 100644
+--- a/Gemfile.lock
++++ b/Gemfile.lock
+@@ -32,7 +32,7 @@ GEM</p>
+
+<pre><code> pygments.rb (0.1.3)
+   rubypython (&gt;= 0.5.1)
+ rack (1.3.2)
+</code></pre>
+
+<ul>
+<li> rake (0.9.2)</li>
+<li> rake (0.9.2.2)
+ rb-fsevent (0.4.3.1)
+ rdiscount (1.6.8)
+ rubypants (0.2.0)
+```</li>
+</ul>
+
+
+<p>The second issue did not manifest itself until I tried to
+add syntax highlighting to a code block. Luckily somebody else
+had already identified the root cause and
+<a href="https://bitbucket.org/raineszm/rubypython/issue/7/libpython-fails-to-load-on-64-bit-centos">posted a solution</a>. On my machine, I ran <code>cd ~/.rvm</code> and then
+modified the offending file like this:</p>
+
+<p>```
+diff --git a/gems/ruby-1.9.2-p0/gems/rubypython-0.5.1/lib/rubypython/pythonexec.rb b/gems/ruby-1.9.2-p0/gems/rubypython-0.5.1/lib/rubypython/pythonexec.rb
+index d265cf9..c42c14d 100644
+--- a/gems/ruby-1.9.2-p0/gems/rubypython-0.5.1/lib/rubypython/pythonexec.rb
++++ b/gems/ruby-1.9.2-p0/gems/rubypython-0.5.1/lib/rubypython/pythonexec.rb
+@@ -59,6 +59,7 @@ class RubyPython::PythonExec</p>
+
+<pre><code>     locations &lt;&lt; File.join("/opt/lib", name)
+     locations &lt;&lt; File.join("/usr/local/lib", name)
+     locations &lt;&lt; File.join("/usr/lib", name)
+</code></pre>
+
+<ul>
+<li><pre><code> locations &lt;&lt; File.join("/usr/lib64", name)
+</code></pre>
+
+<p>   end
+ end</p></li>
+</ul>
+
+
+<p>```</p>
+
+<h2>Plugin configuration</h2>
+
+<p>Plugins were ridiculously easy to configure. For example,
+enabling the Google Plus stuff was simply a matter of adding
+my profile number:</p>
+
+<p>```
+diff --git a/<em>config.yml b/</em>config.yml
+index cdc7594..002b87b 100644
+--- a/<em>config.yml
++++ b/</em>config.yml
+@@ -75,7 +75,7 @@ google_plus_one_size: medium</p>
+
+<p> # Google Plus Profile
+ # Hidden: No visible button, just add author information to search results
+-googleplus_user:
++googleplus_user: 114044653383272567071
+ googleplus_hidden: false</p>
+
+<p> # Pinboard
+```</p>
+
+<p>For Disqus (comments), I signed up at disqus.com and registered
+the URL <a href="http://jumanjiman.github.com">http://jumanjiman.github.com</a>
+under the shortname <em>jumanjiman</em>.
+Then I modified my config to be:</p>
+
+<p>```
+diff --git a/<em>config.yml b/</em>config.yml
+index 002b87b..024933b 100644
+--- a/<em>config.yml
++++ b/</em>config.yml
+@@ -87,7 +87,7 @@ delicious_user:
+ delicious_count: 3</p>
+
+<p> # Disqus Comments
+-disqus_short_name:
++disqus_short_name: jumanjiman
+ disqus_show_comment_count: false</p>
+
+<p> # Google Analytics
+```</p>
+
+<h2>References</h2>
+
+<p>Here are some references that I found useful for
+getting acquainted with Markdown:</p>
+
+<ul>
+<li><a href="http://warpedvisions.org/projects/markdown-cheat-sheet/">Markdown cheat sheet</a></li>
+<li><a href="http://octopress.org/docs/blogging/plugins/">Examples for Octopress</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>
