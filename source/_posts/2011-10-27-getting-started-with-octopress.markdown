@@ -12,6 +12,7 @@ laptop. In this post I describe:
 
 * Two issues I encountered during setup along with their solutions
 * Plugin configurations
+* Reordering plugins in the sidebar
 * Helpful references for Markdown
 
 <!-- more -->
@@ -100,6 +101,28 @@ index 002b87b..024933b 100644
  disqus_show_comment_count: false
  
  # Google Analytics
+```
+
+## Reordering plugins in the sidebar ##
+
+I decided I wanted the sidebar plugins to appear
+slightly differently than default.
+I changed the main config:
+
+``` diff Reorder sidebar order
+diff --git a/_config.yml b/_config.yml
+index 024933b..fbcb630 100644
+--- a/_config.yml
++++ b/_config.yml
+@@ -43,7 +43,7 @@ titlecase: true       # Converts page and post titles to tilecase
+ 
+ # list each of the sidebar modules you want to include, in the order you want them to appear.
+ # To add custom asides, create files in /source/_includes/custom/asides/ and add them to the list like 'custom/asides/custom_aside_name.html'
+-default_asides: [asides/recent_posts.html, asides/github.html, asides/twitter.html, asides/delicious.html, asides/pinboard.html, asides/googleplus.html]
++default_asides: [asides/recent_posts.html, asides/googleplus.html, asides/twitter.html, asides/github.html, asides/delicious.html, asides/pinboard.html]
+ 
+ # Each layout uses the default asides, but they can have their own asides instead. Simply uncomment the lines below
+ # and add an array with the asides you want to use.
 ```
 
 ## References ##
