@@ -93,6 +93,7 @@ laptop. In this post I describe:</p>
 <ul>
 <li>Two issues I encountered during setup along with their solutions</li>
 <li>Plugin configurations</li>
+<li>Reordering plugins in the sidebar</li>
 <li>Helpful references for Markdown</li>
 </ul>
 
@@ -234,6 +235,41 @@ Then I modified my config to be:</p>
 </span><span class='line'> disqus_show_comment_count: false
 </span><span class='line'>
 </span><span class='line'> # Google Analytics
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Reordering plugins in the sidebar</h2>
+
+<p>I decided I wanted the sidebar plugins to appear
+slightly differently than default.
+I changed the main config:</p>
+
+<figure class='code'><figcaption><span>Reorder sidebar order</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='diff'><span class='line'><span class="gh">diff --git a/_config.yml b/_config.yml</span>
+</span><span class='line'><span class="gh">index 024933b..fbcb630 100644</span>
+</span><span class='line'><span class="gd">--- a/_config.yml</span>
+</span><span class='line'><span class="gi">+++ b/_config.yml</span>
+</span><span class='line'><span class="gu">@@ -43,7 +43,7 @@ titlecase: true       # Converts page and post titles to tilecase</span>
+</span><span class='line'>
+</span><span class='line'> # list each of the sidebar modules you want to include, in the order you want them to appear.
+</span><span class='line'> # To add custom asides, create files in /source/_includes/custom/asides/ and add them to the list like &#39;custom/asides/custom_aside_name.html&#39;
+</span><span class='line'><span class="gd">-default_asides: [asides/recent_posts.html, asides/github.html, asides/twitter.html, asides/delicious.html, asides/pinboard.html, asides/googleplus.html]</span>
+</span><span class='line'><span class="gi">+default_asides: [asides/recent_posts.html, asides/googleplus.html, asides/twitter.html, asides/github.html, asides/delicious.html, asides/pinboard.html]</span>
+</span><span class='line'>
+</span><span class='line'> # Each layout uses the default asides, but they can have their own asides instead. Simply uncomment the lines below
+</span><span class='line'> # and add an array with the asides you want to use.
 </span></code></pre></td></tr></table></div></figure>
 
 

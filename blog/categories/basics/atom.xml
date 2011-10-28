@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Basics | Jumanjiman]]></title>
   <link href="http://jumanjiman.github.com/blog/categories/basics/atom.xml" rel="self"/>
   <link href="http://jumanjiman.github.com/"/>
-  <updated>2011-10-27T22:59:41-04:00</updated>
+  <updated>2011-10-27T23:12:06-04:00</updated>
   <id>http://jumanjiman.github.com/</id>
   <author>
     <name><![CDATA[Paul Morgan]]></name>
@@ -26,6 +26,7 @@ laptop. In this post I describe:</p>
 <ul>
 <li>Two issues I encountered during setup along with their solutions</li>
 <li>Plugin configurations</li>
+<li>Reordering plugins in the sidebar</li>
 <li>Helpful references for Markdown</li>
 </ul>
 
@@ -131,6 +132,28 @@ index 002b87b..024933b 100644
  disqus_show_comment_count: false</p>
 
 <p> # Google Analytics
+```</p>
+
+<h2>Reordering plugins in the sidebar</h2>
+
+<p>I decided I wanted the sidebar plugins to appear
+slightly differently than default.
+I changed the main config:</p>
+
+<p>``` diff Reorder sidebar order
+diff --git a/<em>config.yml b/</em>config.yml
+index 024933b..fbcb630 100644
+--- a/<em>config.yml
++++ b/</em>config.yml
+@@ -43,7 +43,7 @@ titlecase: true       # Converts page and post titles to tilecase</p>
+
+<p> # list each of the sidebar modules you want to include, in the order you want them to appear.
+ # To add custom asides, create files in /source/_includes/custom/asides/ and add them to the list like 'custom/asides/custom_aside_name.html'
+-default_asides: [asides/recent_posts.html, asides/github.html, asides/twitter.html, asides/delicious.html, asides/pinboard.html, asides/googleplus.html]
++default_asides: [asides/recent_posts.html, asides/googleplus.html, asides/twitter.html, asides/github.html, asides/delicious.html, asides/pinboard.html]</p>
+
+<p> # Each layout uses the default asides, but they can have their own asides instead. Simply uncomment the lines below
+ # and add an array with the asides you want to use.
 ```</p>
 
 <h2>References</h2>
