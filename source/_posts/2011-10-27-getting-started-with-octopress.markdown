@@ -22,7 +22,7 @@ First, the version of *rake* required by Octopress did not match
 what is installed by the gem bundle.
 I fixed that by updating a single file in my git repo:
 
-``` diff
+``` diff Fix rake version for Octopress
 diff --git a/Gemfile.lock b/Gemfile.lock
 index 6350698..aa5fff8 100644
 --- a/Gemfile.lock
@@ -44,7 +44,7 @@ had already identified the root cause and
 [posted a solution](https://bitbucket.org/raineszm/rubypython/issue/7/libpython-fails-to-load-on-64-bit-centos). On my machine, I ran `cd ~/.rvm` and then
 modified the offending file like this:
 
-``` diff
+``` diff Fix Python path for 64-bit OS
 diff --git a/gems/ruby-1.9.2-p0/gems/rubypython-0.5.1/lib/rubypython/pythonexec.rb b/gems/ruby-1.9.2-p0/gems/rubypython-0.5.1/lib/rubypython/pythonexec.rb
 index d265cf9..c42c14d 100644
 --- a/gems/ruby-1.9.2-p0/gems/rubypython-0.5.1/lib/rubypython/pythonexec.rb
@@ -65,7 +65,7 @@ Plugins were ridiculously easy to configure. For example,
 enabling the Google Plus stuff was simply a matter of adding
 my profile number:
 
-``` diff
+``` diff Add Google Plus User ID
 diff --git a/_config.yml b/_config.yml
 index cdc7594..002b87b 100644
 --- a/_config.yml
@@ -86,7 +86,7 @@ the URL [http://jumanjiman.github.com](http://jumanjiman.github.com)
 under the shortname *jumanjiman*.
 Then I modified my config to be:
 
-``` diff
+``` diff Add Disqus shortname
 diff --git a/_config.yml b/_config.yml
 index 002b87b..024933b 100644
 --- a/_config.yml
