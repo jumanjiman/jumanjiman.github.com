@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Basics | Jumanjiman]]></title>
   <link href="http://jumanjiman.github.com/blog/categories/basics/atom.xml" rel="self"/>
   <link href="http://jumanjiman.github.com/"/>
-  <updated>2011-10-27T22:50:47-04:00</updated>
+  <updated>2011-10-27T22:54:55-04:00</updated>
   <id>http://jumanjiman.github.com/</id>
   <author>
     <name><![CDATA[Paul Morgan]]></name>
@@ -39,7 +39,7 @@ laptop. In this post I describe:</p>
 what is installed by the gem bundle.
 I fixed that by updating a single file in my git repo:</p>
 
-<p>``` diff
+<p>``` diff Fix rake version for Octopress
 diff --git a/Gemfile.lock b/Gemfile.lock
 index 6350698..aa5fff8 100644
 --- a/Gemfile.lock
@@ -67,7 +67,7 @@ had already identified the root cause and
 <a href="https://bitbucket.org/raineszm/rubypython/issue/7/libpython-fails-to-load-on-64-bit-centos">posted a solution</a>. On my machine, I ran <code>cd ~/.rvm</code> and then
 modified the offending file like this:</p>
 
-<p>``` diff
+<p>``` diff Fix Python path for 64-bit OS
 diff --git a/gems/ruby-1.9.2-p0/gems/rubypython-0.5.1/lib/rubypython/pythonexec.rb b/gems/ruby-1.9.2-p0/gems/rubypython-0.5.1/lib/rubypython/pythonexec.rb
 index d265cf9..c42c14d 100644
 --- a/gems/ruby-1.9.2-p0/gems/rubypython-0.5.1/lib/rubypython/pythonexec.rb
@@ -96,7 +96,7 @@ index d265cf9..c42c14d 100644
 enabling the Google Plus stuff was simply a matter of adding
 my profile number:</p>
 
-<p>``` diff
+<p>``` diff Add Google Plus User ID
 diff --git a/<em>config.yml b/</em>config.yml
 index cdc7594..002b87b 100644
 --- a/<em>config.yml
@@ -117,7 +117,7 @@ the URL <a href="http://jumanjiman.github.com">http://jumanjiman.github.com</a>
 under the shortname <em>jumanjiman</em>.
 Then I modified my config to be:</p>
 
-<p>``` diff
+<p>``` diff Add Disqus shortname
 diff --git a/<em>config.yml b/</em>config.yml
 index 002b87b..024933b 100644
 --- a/<em>config.yml
