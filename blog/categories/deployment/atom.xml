@@ -1,0 +1,641 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: deployment | Jumanjiman]]></title>
+  <link href="http://jumanjiman.github.com/blog/categories/deployment/atom.xml" rel="self"/>
+  <link href="http://jumanjiman.github.com/"/>
+  <updated>2011-10-30T14:21:18-04:00</updated>
+  <id>http://jumanjiman.github.com/</id>
+  <author>
+    <name><![CDATA[Paul Morgan]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Deploying Intel Studio XE 2011]]></title>
+    <link href="http://jumanjiman.github.com/blog/2011/10/30/deploying-intel-studio-xe/"/>
+    <updated>2011-10-30T14:19:00-04:00</updated>
+    <id>http://jumanjiman.github.com/blog/2011/10/30/deploying-intel-studio-xe</id>
+    <content type="html"><![CDATA[<p>Intel uses the Macrovision floating license manager (flexlm)
+to prevent you from using its developer products without authorization.
+You need flexlm on one server if you are using floating licenses
+for Intel client products, such as VTune or icc.
+Flexlm running on Linux provides support for both Windows and
+Linux clients running Intel studio.</p>
+
+<p>If you want things to "just work", you have some work to do.
+For starters, flexlm is shipped as a tarball with an interactive
+install script. Worse, the documentation for flexlm is
+spotty and fails to provide a useful init script.
+There is always more that one way to do it, but this post
+shows one approach to bundling and deploying a third-party
+application in a repeatable fashion.</p>
+
+<p>In this post, I provide some tips for deploying the flex license
+manager for Intel developer tools on RHEL 5 (64-bit), including:</p>
+
+<ul>
+<li>Prepare the license file</li>
+<li>Package flexlm as an RPM</li>
+<li>Create a SysV-style init script for flexlm that works
+with Red Hat Cluster Suite (RHCS)</li>
+</ul>
+
+
+<!-- more -->
+
+
+<h2>Setup the floating license file</h2>
+
+<h3>Combine license files into a single file</h3>
+
+<p>Flexlm will not start without a valid license file, so
+our first step is to create a file which combines
+one or more licenses.</p>
+
+<p><code>text /opt/intel/licenses/server.lic
+SERVER id-lic01 00174F0D0060 28518
+VENDOR INTEL port=28519
+PACKAGE I3FD67AA5 INTEL 2011.1221 8BC9DA9CDC44 COMPONENTS="ArBBL \
+...
+INCREMENT F4AC67AA5 INTEL 2011.1221 21-dec-2011 5 CAAAAAAAAAA1 \
+...
+INCREMENT I3FD67AA5 INTEL 2011.1221 21-dec-2011 5 FAAAAAAAAAA1 \
+...
+</code></p>
+
+<p>Important: <em>The license file also configures the network ports
+for the license server.</em>
+In the above snippet, line 1 tells the master flexlm server to run on port 28518,
+while line 2 tells the vendor server (INTEL) to run on port 28519.
+By default, the vendor port is missing from the license file.
+You can manually add the port to the vendor line without
+compromising the signature in the license.</p>
+
+<p>Line 3 is the first individual license, and lines 5 &amp; 7 indicate
+the start of additional licenses. The SERVER and VENDOR lines
+should appear only once in your license file.
+Naturally, I changed the private information in the above snippet
+so nobody can steal our license or complain about unauthorized sharing.</p>
+
+<h3>Export an environment variable</h3>
+
+<p>Every host needing to run the Intel tools with a floating license
+needs to know where the license file lives. To keep things simple,
+deploy a file <code>/etc/profile.d/intel-licens.sh</code>:</p>
+
+<p><code>bash /etc/profile.d/intel-license.sh
+if [ -n "$BASH_VERSION" -o -n "$KSH_VERSION" -o -n "$ZSH_VERSION" ]; then
+  # export an environment variable for Intel floating licenses
+  INTEL_LICENSE_FILE=${INTEL_LICENSE_FILE:-"/opt/intel/licenses/server.lic"}
+  export INTEL_LICENSE_FILE
+fi
+</code></p>
+
+<p>In the above snippet, line 3 provides a default path to our
+system-wide license file but does <em>not</em> override a user's
+personal license file, if any.</p>
+
+<h3>Bundle the license file and profile script as an RPM</h3>
+
+<p>You can deploy the license file and profile script however
+you see fit. You can deploy directly with <a href="http://puppetlabs.com/">Puppet</a>,
+<a href="http://wiki.opscode.com/display/chef/Home">Chef</a>,
+<a href="http://trac.mcs.anl.gov/projects/bcfg2/">bcfg2</a>,
+or any other mechanism. You can also bundle the above two
+files as an RPM using a spec file like this, which you can
+<a href="https://gist.github.com/1326195">download or clone</a> from GitHub:</p>
+
+<p><div><script src='https://gist.github.com/1326195.js?file='></script>
+<noscript><pre><code>Name:		intel-license
+Version:	0.1
+Release:	1%{?dist}
+Summary:	Provides license file for Intel products
+
+Group:		System Environment/Base
+License:	Proprietary
+URL:		http://jumanjiman.github.com
+Source0:	%{name}-%{version}.tar.gz
+BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
+BuildArch:	noarch
+
+
+%description
+Floating license for Intel products, such as VTune.
+This must be installed on the flexlm server and all
+clients that need to run Intel tools.
+
+
+%prep
+%setup -q
+
+
+%build
+
+
+%install
+%{__rm} -rf %{buildroot}
+%{__mkdir_p} %{buildroot}%{_sysconfdir}/profile.d
+%{__install} -pm 644 src/intel-license.sh %{buildroot}%{_sysconfdir}/profile.d
+%{__mkdir_p} %{buildroot}/opt/intel/licenses
+%{__install} -pm 644 %{current_license} %{buildroot}/opt/intel/licenses/server.lic
+
+
+%clean
+%{__rm} -rf %{buildroot}
+
+
+%files
+%defattr(-,root,root,-)
+%config /opt/intel/licenses/server.lic
+%{_sysconfdir}/profile.d/intel-license.sh
+
+
+%post
+if [ $1 -gt 0 ]; then
+  sed -i '/^#INTEL_LICENSE_BEGIN/,/^#INTEL_LICENSE_END/D' /etc/hosts &amp;&gt; /dev/null || :
+  cat &gt;&gt; /etc/hosts &lt;&lt; EOF
+#INTEL_LICENSE_BEGIN
+192.168.0.254 id-lic01.example.com id-lic01
+#INTEL_LICENSE_END
+EOF
+fi
+
+
+%changelog
+* Fri Mar 04 2011 Paul Morgan &lt;jumanjiman@gmail.com&gt; 0.1-1
+- new package built with tito</code></pre></noscript></div>
+</p>
+
+<p>In the above spec file, lines 45-53 provide an rpm scriptlet
+that runs after installation. Line 46 uses <code>sed</code> to delete
+our modifications to <code>/etc/hosts</code>. Lines 47-53 add an entry
+to <code>/etc/hosts</code> to guarantee that each client can resolve
+the name of our license server in case of DNS misconfiguration.</p>
+
+<h2>Package flexlm as an RPM</h2>
+
+<h3>Initial setup for flexlm</h3>
+
+<p>First, extract the flexlm tarball and run <code>Install_INTEL</code> on a
+throw-away virtual machine. The script creates several files
+and some symbolic links. We're not going to use this tree
+directly. Instead, we'll create a separate directory and copy
+some of the files into an alternate tree.</p>
+
+<ul>
+<li>A top-level <code>flexlm-server</code> directory to store all the necessary files</li>
+<li>A <code>docs</code> directory to store the installation log
+and config file from the interactive installation</li>
+<li>A <code>flexlm</code> directory for proprietary files from the installation</li>
+<li>A <code>src</code> directory for my own SysV-style init script,
+which I'll provide later in this post</li>
+</ul>
+
+
+<p>In my case, I created four directories and copied a subset
+of the files into this alternate tree:</p>
+
+<pre><code>flexlm-server/
+├── docs
+│   ├── Install_INTEL.cfg
+│   └── Install_INTEL.log 
+├── flexlm
+│   ├── chklic
+│   ├── END_USER_LICENSE
+│   ├── enduser.pdf
+│   ├── getip
+│   ├── HowTo.html
+│   ├── Install_INTEL
+│   ├── INTEL
+│   ├── lmgrd.intel
+│   ├── lmutil
+│   └── README
+└── src
+</code></pre>
+
+<h3>Create a SysV-style init script for flexlm</h3>
+
+<p>In modern init scripts, the exit code must <em>not</em> be based
+on the state <em>transition</em>. According to
+<a href="http://refspecs.freestandards.org/LSB_3.1.1/LSB-Core-generic/LSB-Core-generic/iniscrptact.html">LSB requirements</a>,
+the exit code must be based on the final <em>state</em> of the service:</p>
+
+<ul>
+<li>Upon a <code>start</code>, the script must return zero if
+the service is running normally
+and a non-zero exit code otherwise</li>
+<li>Upon a <code>stop</code>, the script must return zero if the service
+is not running and a non-zero exit code otherwise</li>
+<li>Upon a <code>restart</code>, the script must return zero if the service
+is running normally after the script completes
+and a non-zero exit code otherwise</li>
+<li>Upon a <code>status</code>, the script must return zero if the service
+is running normally and must return non-zero otherwise</li>
+</ul>
+
+
+<p>Intel recommends using <code>lmstat</code> to confirm status.
+Unfortunately, the init script cannot use the exit code of <code>lmstat</code>
+to determine status.
+For example, consider the following run of <code>./lmstat</code>,
+in which the flexlm server is <em>not</em> running:</p>
+
+<p>``` bash Output of lmstat when server is not running
+lmstat - Copyright (c) 1989-2004 by Macrovision Corporation. All rights reserved.
+Flexible License Manager status on Fri 3/4/2011 12:22</p>
+
+<p> License server status: 28518@ic-lic01</p>
+
+<pre><code>License file(s) on ic-lic01: /usr/local/flexlm/licenses/license.dat:@id-lic01:server.lic:
+</code></pre>
+
+<p>lmgrd is not running: Server node is down or not responding (-96,7)
+```</p>
+
+<p>The output clearly indicates that the server is down, but
+the exit status indicates the server is running:</p>
+
+<p><code>bash Wrong exit status when server is not running
+echo $?
+0
+</code></p>
+
+<p>All is not lost.
+The exit code of <code>lmstat</code> is untrustworthy for our init script,
+but we can <code>grep</code> the output for key phrases.
+Here's the output of <code>lmstat</code> when the service <em>is</em> running:</p>
+
+<p>``` bash Output of lmstat when server is running normally
+lmstat - Copyright (c) 1989-2004 by Macrovision Corporation. All rights reserved.
+Flexible License Manager status on Fri 3/4/2011 12:22</p>
+
+<p>License server status: 28518@id-lic01</p>
+
+<pre><code>License file(s) on id-lic01: /opt/intel/flexlm/server.lic:
+</code></pre>
+
+<p>  id-lic01: license server UP (MASTER) v9.2</p>
+
+<p>Vendor daemon status (on id-lic01):</p>
+
+<pre><code> INTEL: UP v9.2
+</code></pre>
+
+<p>```</p>
+
+<p>Before writitng the init script, we need to understand that
+there are actually <em>two</em> services to check.
+The first is  the <code>lmgrd</code> master daemon, and
+the second is the <code>INTEL</code> vendor daemon.</p>
+
+<p>Without further ado, let me just show the init script I came up with.
+You can <a href="https://gist.github.com/1296847">clone or download it from GitHub</a>:</p>
+
+<p><div><script src='https://gist.github.com/1296847.js?file='></script>
+<noscript><pre><code>#!/bin/bash
+#
+#	/etc/rc.d/init.d/flexlm
+#
+#	Manage the Intel license server
+#
+# chkconfig: 2345 90 10
+# description: Start or stop the Intel flex license manager
+#              There are two daemons: the master and the vendor.
+
+### BEGIN INIT INFO
+# ref: http://refspecs.linux-foundation.org/LSB_3.2.0/LSB-Core-generic/LSB-Core-generic/facilname.html
+# Provides: flexlm
+# Required-Start: $syslog
+# Required-Stop: 
+# Default-Start: 2345
+# Default-Stop: 10
+# Short-Description: Intel flex license manager daemons.
+# Description:      Start or stop the master and vendor daemons to support Intel floating licenses.
+### END INIT INFO
+
+
+# exit codes
+  # standard codes per
+  # http://refspecs.freestandards.org/LSB_3.1.1/LSB-Core-generic/LSB-Core-generic/iniscrptact.html
+  rc_OK=0
+  rc_dead_and_pid_file_exists=1
+  rc_dead_and_lock_exists=2
+  rc_not_running=3
+  rc_unimplemented=3
+  rc_unknown=4
+  # app-specific codes (150-199)
+
+prog=$(basename $0)
+
+# Source function library.
+. /etc/init.d/functions
+
+# read the config file if it exists
+config=/etc/sysconfig/flexlm
+[ -r ${config} ] &amp;&amp; . ${config}
+
+# default values (if not defined in config)
+basedir=${basedir:-/opt/intel/flexlm}
+license_file=${basedir}/${license_file:-server.lic}
+logdir=${logdir:-/var/log/flexlm}
+log_file=${logdir}/${log_file:-lmgrd.intel.log}
+masterd=${masterd:-lmgrd.intel}
+vendord=${vendord:-INTEL}
+pid_dir=/var/run/flexlm
+user=${user:-svc_flexlm}
+
+# programs
+lmstat=${basedir}/lmstat
+
+# functions
+
+check_status() {
+	# see implementation_notes document with this rpm
+	$lmstat -c $license_file 2&gt;&amp;1 | grep 'not running' &amp;&gt; /dev/null &amp;&amp; _rc=$rc_unknown || _rc=0
+
+	if [ $_rc -eq 0 ]; then
+	  # appear to be running, so check pid files
+	  master_pid_expected=$(cat $pid_dir/masterd 2&gt; /dev/null)
+	  master_pid_actual=$(pidof $masterd 2&gt; /dev/null)
+	  if [[ $master_pid_expected != $master_pid_actual ]]; then
+	    echo &quot;master pid file is missing or stale&quot; &gt;&amp;2
+	    _rc=$rc_unknown
+	  fi
+	  vendor_pid_expected=$(cat $pid_dir/vendord 2&gt; /dev/null)
+	  vendor_pid_actual=$(pidof $vendord 2&gt; /dev/null)
+	  if [[ $vendor_pid_expected != $vendor_pid_actual ]]; then
+	    echo &quot;vendor pid file is missing or stale&quot; &gt;&amp;2
+	    _rc=$rc_unknown
+	  fi
+	else
+	  # not running, so pid files should not exist
+	  if [[ -r $pid_dir/masterd ]] || [[ -r $pid_dir/vendord ]]; then
+	    echo &quot;flexlm is dead and pid file exists&quot; &gt;&amp;2
+	    _rc=$rc_dead_and_pid_file_exists
+	  fi
+	fi
+
+	return $_rc
+}
+
+start() {
+	echo -n &quot;Starting flexlm master and vendor daemons: &quot;
+
+	su -c &quot;cd $basedir &amp;&amp; $basedir/$masterd -c $license_file -l $log_file 2&gt;&amp;1&quot; - $user &gt;&gt; $logdir/startup.errors
+	echo $(pidof $masterd) &gt; $pid_dir/masterd
+	echo $(pidof $vendord) &gt; $pid_dir/vendord
+
+	# per http://refspecs.freestandards.org/LSB_3.1.1/LSB-Core-generic/LSB-Core-generic/iniscrptact.html
+	# this should return 0 if we are started, even on a service already running
+	check_status
+	_rc=$?
+
+	[ $_rc -eq 0 ] &amp;&amp; echo_success || echo_failure
+	echo
+	return $_rc
+}	
+
+stop() {
+	echo -n &quot;Stopping flexlm master and vendor daemons: &quot;
+
+	for pid in $(pidof $masterd); do
+	  kill -9 $pid
+	done
+
+	for pid in $(pidof $vendord); do
+	  kill -9 $pid
+	done
+
+	rm -f $pid_dir/masterd
+	rm -f $pid_dir/vendord
+
+	# per http://refspecs.freestandards.org/LSB_3.1.1/LSB-Core-generic/LSB-Core-generic/iniscrptact.html
+	# we should return 0 if stopped, even if we were already stopped or not enabled
+	check_status &amp;&gt; /dev/null &amp;&amp; _rc=1 || _rc=0
+
+	[ $_rc -eq 0 ] &amp;&amp; echo_success || echo_failure
+	echo
+	return $_rc
+}
+
+status() {
+        echo -n &quot;Status of flexlm: &quot;
+
+	check_status
+	_rc=$?
+
+	[ $_rc -eq 0 ] &amp;&amp; echo_success || echo_failure
+	echo
+	return $_rc
+}
+
+case &quot;$1&quot; in
+    start)
+	start
+	;;
+    stop)
+	stop
+	;;
+    status)
+	status
+	;;
+    restart)
+    	stop
+	start
+	;;
+    *)
+	echo &quot;Usage: flexlm {start|stop|status|restart}&quot;
+	exit $rc_unimplemented
+	;;
+esac
+exit $?</code></pre></noscript></div>
+</p>
+
+<h3>Make a spec file</h3>
+
+<p>There are numerous references for building spec files.
+I try to adhere to the
+<a href="http://fedoraproject.org/wiki/Packaging:Guidelines">Fedora Packaging Guidelines</a>
+when possible.</p>
+
+<p>This RPM includes proprietary code and could
+never be considered for inclusion in any free distro, but
+the spec file works for me in a private deployment.
+The spec file itself is mine and is distributed under the GPLv2.
+You can <a href="https://gist.github.com/1325001">download or clone</a>
+this spec file from GitHub.
+Put this spec file in the top level of your flexlm-server directory.</p>
+
+<p><div><script src='https://gist.github.com/1325001.js?file='></script>
+<noscript><pre><code># do nothing instead of strip symbols
+%global __strip /bin/true
+
+# do not build debuginfo pkg
+%global debug_package %{nil}
+
+
+Name:		flexlm-server
+Summary:	Intel floating license server
+
+Version:	0.2
+Release:	1%{?dist}
+
+Group:		System Environment/Daemons
+License:	Proprietary
+URL:		http://jumanjiman.github.com
+
+Source0:	%{name}-%{version}.tar.gz
+BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
+
+Requires:	/opt/intel/licenses/server.lic
+
+%description
+This installs the Intel Macrovision floating license manager.
+It is also referred to as the flex license manager.
+You need this on one server if you are using floating licenses 
+for Intel client products, such as VTune.
+
+
+%prep
+%setup -q
+
+
+%build
+
+
+%install
+%{__rm} -rf %{buildroot}
+%{__mkdir_p} %{buildroot}/var/log/flexlm
+%{__mkdir_p} %{buildroot}/var/run/flexlm
+%{__mkdir_p} %{buildroot}/opt/intel/flexlm
+%{__install} -pm755 flexlm/chklic %{buildroot}/opt/intel/flexlm
+%{__install} -pm755 flexlm/getip %{buildroot}/opt/intel/flexlm
+%{__install} -pm755 flexlm/INTEL %{buildroot}/opt/intel/flexlm
+%{__install} -pm755 flexlm/lmgrd.intel %{buildroot}/opt/intel/flexlm
+%{__install} -pm755 flexlm/lmutil %{buildroot}/opt/intel/flexlm
+pushd %{buildroot}/opt/intel/flexlm &amp;&gt; /dev/null
+ln -s lmutil lmborrow
+ln -s lmutil lmdiag
+ln -s lmutil lmdown
+ln -s lmutil lmhostid
+ln -s lmutil lminstall
+ln -s lmutil lmnewlog
+ln -s lmutil lmpath
+ln -s lmutil lmremove
+ln -s lmutil lmreread
+ln -s lmutil lmstat
+ln -s lmutil lmswitch
+ln -s lmutil lmswitchr
+ln -s lmutil lmver
+popd &amp;&gt; /dev/null
+%{__mkdir_p} %{buildroot}%{_sysconfdir}/rc.d/init.d
+%{__install} src/flexlm %{buildroot}%{_sysconfdir}/rc.d/init.d
+
+
+%clean
+%{__rm} -rf %{buildroot}
+
+
+%files
+%defattr(-,root,root,-)
+%doc docs/README.updating-the-license
+%doc docs/implementation_notes
+%doc docs/README.kbase
+%doc docs/README.service_account
+%doc flexlm/END_USER_LICENSE
+%doc flexlm/enduser.pdf
+%doc flexlm/HowTo.html
+%doc flexlm/Install_INTEL
+%doc flexlm/README
+%doc docs/Install_INTEL.cfg
+%doc docs/Install_INTEL.log
+/opt/intel/flexlm/chklic
+/opt/intel/flexlm/getip
+/opt/intel/flexlm/INTEL
+/opt/intel/flexlm/lmgrd.intel
+/opt/intel/flexlm/lmutil
+/opt/intel/flexlm/lmborrow
+/opt/intel/flexlm/lmdiag
+/opt/intel/flexlm/lmdown
+/opt/intel/flexlm/lmhostid
+/opt/intel/flexlm/lminstall
+/opt/intel/flexlm/lmnewlog
+/opt/intel/flexlm/lmpath
+/opt/intel/flexlm/lmremove
+/opt/intel/flexlm/lmreread
+/opt/intel/flexlm/lmstat
+/opt/intel/flexlm/lmswitch
+/opt/intel/flexlm/lmswitchr
+/opt/intel/flexlm/lmver
+%config /opt/intel/flexlm/server.lic
+%attr(755,svc_flexlm,root) %dir /var/log/flexlm
+%attr(755,svc_flexlm,root) %dir /var/run/flexlm
+%{_sysconfdir}/rc.d/init.d/flexlm
+
+
+%preun
+if [ $1 -eq 0 ]; then
+  /sbin/service flexlm stop || :
+  /sbin/chkconfig --del flexlm || :
+fi
+
+
+%post
+if [ $1 -gt 0 ]; then
+  /sbin/chkconfig --add flexlm || :
+  if /sbin/service flexlm status &amp;&gt; /dev/null; then
+    /sbin/service flexlm restart || :
+  fi
+fi
+
+
+%changelog
+* Fri Mar 04 2011 Paul Morgan &lt;jumanjiman@gmail.com&gt; 0.2-1
+- new package built with tito
+</code></pre></noscript></div>
+</p>
+
+<p>Lines 98-102 of the spec file define an rpm scriptlet that
+runs <em>before</em> the rpm is uninstalled. In line 99, we test
+the <code>$1</code> variable to see if this is the last removal of the package
+and, if so, stop the service and remove the init symlinks before
+actually uninstalling the package. We use a bash noop (<code>:</code>)
+to ensure the rpm scriptlet does not fail. If a scriptlet fails,
+the package will not be uninstalled.</p>
+
+<p>Lines 105-111 define an rpm scriptlet that runs <em>after</em> the
+rpm has been installed. Line 106 checks to ensure that we
+have at least one copy of the rpm installed. If so, line 107
+ensures the SysV init symlinks exist without changing the
+boot-time startup. Lines 108-110 check to see if the service
+is currently running. If it <em>is</em> running, we restart the
+service to pick up any changes from this version of the package.
+Again, we use a noop to prevent the scriptlet from failing
+during an upgrade or fresh installation. If the service fails
+for any reason, such as broken networking, we'll still have
+the package in place for troubleshooting.</p>
+
+<h3>Build the RPM</h3>
+
+<p>I use <a href="https://github.com/dgoodwin/tito">tito</a> for most of my
+rpm-building needs.
+It's available in the Fedora and <a href="http://fedoraproject.org/wiki/EPEL">EPEL</a>
+yum repos.</p>
+
+<p>We have our directory tree setup, so now we initialize it for tito:</p>
+
+<p><code>bash Build with tito
+tito init
+tito tag --keep-version
+tito build --rpm
+</code></p>
+
+<p>Assuming all goes well, you'll have a source rpm and a binary rpm,
+ready to be added to an in-house yum repo for deployment.</p>
+]]></content>
+  </entry>
+  
+</feed>
