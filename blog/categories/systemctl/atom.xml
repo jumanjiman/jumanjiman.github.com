@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: systemctl | Jumanjiman]]></title>
+  <link href="http://jumanjiman.github.com/blog/categories/systemctl/atom.xml" rel="self"/>
+  <link href="http://jumanjiman.github.com/"/>
+  <updated>2011-11-04T18:41:59-04:00</updated>
+  <id>http://jumanjiman.github.com/</id>
+  <author>
+    <name><![CDATA[Paul Morgan]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Check boot-time service status with systemctl]]></title>
+    <link href="http://jumanjiman.github.com/blog/2011/11/04/check-boot-time-service-status-with-systemctl/"/>
+    <updated>2011-11-04T18:29:00-04:00</updated>
+    <id>http://jumanjiman.github.com/blog/2011/11/04/check-boot-time-service-status-with-systemctl</id>
+    <content type="html"><![CDATA[<p>Seth Vidal posted a useful snippet at <a href="http://skvidal.wordpress.com/2011/11/04/like-chkconfig-list">http://skvidal.wordpress.com/2011/11/04/like-chkconfig-list</a>
+today for checking the boot-time status of services on a host
+using <a href="http://fedoraproject.org/wiki/SysVinit_to_Systemd_Cheatsheet">systemd</a>.</p>
+
+<p>I copied and pasted from his blog into my shell, only
+to discover that Wordpress had transformed his double-quotes
+into smart quotes. Bleh. So I hacked for a couple minutes
+and came up with this <a href="https://gist.github.com/1340655">new version</a>:</p>
+
+<p><div><script src='https://gist.github.com/1340655.js?file='></script>
+<noscript><pre><code>#!/bin/bash
+
+for i in /lib/systemd/system/*.service; do
+  svc=$(basename $i)
+  systemctl is-enabled $svc &amp;&gt; /dev/null &amp;&amp; status=on || status=off
+  printf &quot;%-50s %9s\n&quot; $svc $status
+done</code></pre></noscript></div>
+</p>
+
+<p>Here's 10 lines of output from the script:</p>
+
+<p><code>text Boot-time service status
+abrtd.service                                             on
+accounts-daemon.service                                  off
+acpid.service                                             on
+atd.service                                               on
+atop.service                                             off
+avahi-daemon.service                                      on
+bluetooth.service                                         on
+canberra-system-bootup.service                           off
+canberra-system-shutdown-reboot.service                  off
+canberra-system-shutdown.service                         off
+</code></p>
+
+<p>Enjoy!</p>
+]]></content>
+  </entry>
+  
+</feed>

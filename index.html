@@ -9,9 +9,8 @@
   <meta name="author" content="Paul Morgan">
 
   
-  <meta name="description" content="Intel uses the Macrovision floating license manager (flexlm)
-to prevent you from using its developer products without authorization.
-You need flexlm &hellip;">
+  <meta name="description" content="Seth Vidal posted a useful snippet at http://skvidal.wordpress.com/2011/11/04/like-chkconfig-list
+today for checking the boot-time status of services &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +76,81 @@ You need flexlm &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/11/04/check-boot-time-service-status-with-systemctl/">Check Boot-time Service Status With Systemctl</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+  
+
+<time datetime="2011-11-04T18:29:00-04:00" pubdate>Nov 4<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Seth Vidal posted a useful snippet at <a href="http://skvidal.wordpress.com/2011/11/04/like-chkconfig-list">http://skvidal.wordpress.com/2011/11/04/like-chkconfig-list</a>
+today for checking the boot-time status of services on a host
+using <a href="http://fedoraproject.org/wiki/SysVinit_to_Systemd_Cheatsheet">systemd</a>.</p>
+
+<p>I copied and pasted from his blog into my shell, only
+to discover that Wordpress had transformed his double-quotes
+into smart quotes. Bleh. So I hacked for a couple minutes
+and came up with this <a href="https://gist.github.com/1340655">new version</a>:</p>
+
+<div><script src='https://gist.github.com/1340655.js?file='></script>
+<noscript><pre><code>#!/bin/bash
+
+for i in /lib/systemd/system/*.service; do
+  svc=$(basename $i)
+  systemctl is-enabled $svc &amp;&gt; /dev/null &amp;&amp; status=on || status=off
+  printf &quot;%-50s %9s\n&quot; $svc $status
+done</code></pre></noscript></div>
+
+
+<p>Here&#8217;s 10 lines of output from the script:</p>
+
+<figure class='code'><figcaption><span>Boot-time service status</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>abrtd.service                                             on
+</span><span class='line'>accounts-daemon.service                                  off
+</span><span class='line'>acpid.service                                             on
+</span><span class='line'>atd.service                                               on
+</span><span class='line'>atop.service                                             off
+</span><span class='line'>avahi-daemon.service                                      on
+</span><span class='line'>bluetooth.service                                         on
+</span><span class='line'>canberra-system-bootup.service                           off
+</span><span class='line'>canberra-system-shutdown-reboot.service                  off
+</span><span class='line'>canberra-system-shutdown.service                         off
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Enjoy!</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -196,6 +270,10 @@ laptop. In this post I describe:</p>
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2011/11/04/check-boot-time-service-status-with-systemctl/">Check boot-time service status with systemctl</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2011/10/30/deploying-intel-studio-xe/">Deploying Intel Studio XE 2011</a>

@@ -244,6 +244,10 @@ Director of Distance Learning.
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2011/11/04/check-boot-time-service-status-with-systemctl/">Check boot-time service status with systemctl</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2011/10/30/deploying-intel-studio-xe/">Deploying Intel Studio XE 2011</a>
       </li>
     
