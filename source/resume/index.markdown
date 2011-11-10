@@ -16,6 +16,10 @@ administration. My experience includes but is not limited to SAN
 and NAS attachment, NIS, performance and capacity management,
 Kerberos, LDAP, and architectural design.
 
+Aside from my [Github repos](https://github.com/jumanjiman),
+I've [contributed to tito](https://github.com/dgoodwin/tito/commits/master?author=jumanjiman) and
+[contributed to etckeeper](http://git.kitenet.net/?p=etckeeper.git&a=search&h=HEAD&st=commit&s=jumanjiman).
+
 ## Certifications ##
 
 [Verify my relevant certifications](https://www.redhat.com/wapps/training/certification/verify.html?certNumber=808003949607430). These include:
