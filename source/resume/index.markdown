@@ -22,7 +22,7 @@ I've [contributed to tito](https://github.com/dgoodwin/tito/commits/master?autho
 
 ## Certifications ##
 
-[Verify my relevant certifications](https://www.redhat.com/wapps/training/certification/verify.html?certNumber=808003949607430). These include:
+[Verify my relevant certifications](https://www.redhat.com/wapps/training/certification/verify.html?certNumber=100-000-504&isSearch=False&verify=Verify). These include:
 
 * [RHCA](http://www.redhat.com/certification/rhca)  Red Hat Certified Architect
 * [RHCSS](http://www.redhat.com/certification/rhcss) Red Hat Certified Security Specialist
